@@ -1,4 +1,4 @@
-asgi-redis==1.4.3
+# asgi-redis==1.4.3
 asgiref==3.8.1
 attrs==24.2.0
 autobahn==24.4.2
