@@ -2,8 +2,8 @@ import logging
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
-from main.models import User
 from .models import ChatRooms, Messages
+from main.models import User
 
 logger = logging.getLogger('chat')
 
