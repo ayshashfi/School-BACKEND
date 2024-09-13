@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-yv#&8*=-$##_vtgsbf65wj5ayq(2w=7^*+28!0y+lfsl0#bk62'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '13.48.27.195']
 
@@ -132,7 +132,7 @@ DATABASES = {
 'USER': 'myprojectuser',
 'PASSWORD': 'password',
 'HOST': 'localhost',
-'PORT': '',
+'PORT': '5432',
 }
 }
 
