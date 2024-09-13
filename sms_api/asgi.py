@@ -1,26 +1,29 @@
 import os
+import django
 from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
-from django.core.asgi import get_asgi_application
 from channels.security.websocket import AllowedHostsOriginValidator
+from django.core.asgi import get_asgi_application
 
 from chat.routing import websocket_urlpatterns
 from chat.channels_middleware import JWTwebsocketMiddleware
 
+# Set the default Django settings module
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'sms_api.settings')
 
-# Initialize Django ASGI application early to ensure the AppRegistry
-# is populated before importing code that may import ORM models.
+# Initialize Django
+django.setup()
+
+# Initialize Django ASGI application
 django_asgi_app = get_asgi_application()
 
+# Define the ASGI application protocol types
 application = ProtocolTypeRouter({
-    'http': django_asgi_app,
-    'websocket': AllowedHostsOriginValidator(
-        JWTwebsocketMiddleware(
-            AuthMiddlewareStack(
-                URLRouter(
-                    websocket_urlpatterns
-                )
+    'http': django_asgi_app,  # HTTP protocol using Django ASGI app
+    'websocket': AllowedHostsOriginValidator(  # WebSocket protocol with allowed hosts validation
+        JWTwebsocketMiddleware(  # Custom JWT middleware for WebSocket
+            AuthMiddlewareStack(  # Authentication middleware for WebSocket
+                URLRouter(websocket_urlpatterns)  # URL routing for WebSocket
             )
         )
     ),
