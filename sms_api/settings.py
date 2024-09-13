@@ -25,11 +25,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-yv#&8*=-$##_vtgsbf65wj5ayq(2w=7^*+28!0y+lfsl0#bk62'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '16.170.218.34']
 
-
+CORS_ALLOWED_ORIGINS = [
+    # 'http://yourdomain.com',
+    'http://16.170.218.34',
+]
 # Application definition
 
 INSTALLED_APPS = [
