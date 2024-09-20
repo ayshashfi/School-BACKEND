@@ -43,7 +43,7 @@ class IsAdminOrTeacher(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
-        return request.user and (request.user.is_admin or request.user.is_teacher)
+        return request.user.is_authenticated and (request.user.is_admin or request.user.is_teacher)
 
 
 class UpdateLeaveStatusView(APIView):

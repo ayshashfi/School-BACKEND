@@ -17,14 +17,18 @@ class MessageListView(generics.ListCreateAPIView):
 
         try:
             chat_room = ChatRooms.objects.filter(
-                Q(user1_id = user_id1, user2_id = user_id2) | Q(user1_id = user_id2, user2_id = user_id1))
-            print("_____",chat_room)
+                Q(user1_id=user_id1, user2_id=user_id2) | Q(user1_id=user_id2, user2_id=user_id1)
+            ).first()  # Get the first matching chat room
+
             if not chat_room:
                 raise NotFound('Room not found')
-            messages = Messages.objects.filter(chat_room__in = chat_room).order_by('-timestamp')
+
+            # Retrieve the last 20 messages, ordered by timestamp
+            messages = Messages.objects.filter(chat_room=chat_room).order_by('-timestamp')[:20]
             return messages
         except ChatRooms.DoesNotExist:
             return Messages.objects.none()
+
 
 @api_view(['POST'])
 def AddChatRoom(request):
@@ -44,8 +48,7 @@ def AddChatRoom(request):
 
             # Check if chat room already exists
             if chat_rooms.exists():
-                print("YES")
-                chat_room = chat_rooms.first()  # Assuming you want to use the first found chat room
+                chat_room = chat_rooms.first()  # Get the first found chat room
                 serializer = ChatroomSerializer(chat_room)
                 return Response(serializer.data, status=status.HTTP_200_OK)
             else:
@@ -57,15 +60,42 @@ def AddChatRoom(request):
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        
+@api_view(['POST'])
+def AddMessage(request):
+    if request.method == 'POST':
+        try:
+            chat_room_id = request.data.get('chat_room_id')
+            content = request.data.get('content')
+            user = request.user  # Assuming you have user authentication set up
+
+            # Create a new message
+            message = Messages.objects.create(chat_room_id=chat_room_id, user=user, content=content)
+
+            # Limit messages to the last 30
+            messages = Messages.objects.filter(chat_room_id=chat_room_id).order_by('timestamp')
+
+            # Check if the count exceeds 30
+            if messages.count() > 30:
+                # Delete all messages except the last 30
+                messages[:-30].delete()
+
+            print(f"Current message count: {messages.count()}")
+
+            return Response(MessageSerializer(message).data, status=status.HTTP_201_CREATED)
+
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
 @api_view(['GET'])    
-def ListChatUsers(request,user_id):
+def ListChatUsers(request, user_id):
     if request.method == 'GET':
         try:
-            users = ChatRooms.objects.filter(Q(user1_id = user_id) | Q(user2_id = user_id))
+            users = ChatRooms.objects.filter(Q(user1_id=user_id) | Q(user2_id=user_id))
             if not users:
-                return Response({'message':'No chat rooms found '})
-            serializer = ChatroomSerializer(users,many = True)
+                return Response({'message': 'No chat rooms found '})
+            serializer = ChatroomSerializer(users, many=True)
             return Response(serializer.data)
 
         except ChatRooms.DoesNotExist:
@@ -77,28 +107,19 @@ class ChatNotificationView(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         chat_rooms = ChatRooms.objects.filter(Q(user1=user) | Q(user2=user))
-        # print(user)
-        
-        # # Annotate each chat room with the count of unread messages
-        # chat_rooms = chat_rooms.annotate(
-        #     unread_messages_count=Count('message', 
-        #                                 filter=Q(message__user=user, message__is_read=False))
-        # )
         
         # Annotate each chat room with the count of unread messages
         chat_rooms = chat_rooms.annotate(
             unread_messages_count=Count(
                 'message',
-                filter=Q(message__is_read=False) &
-                    #    Q(user2=user) &  # The current user is the recipient (user2)
-                       ~Q(message__user=user)  # The sender is user1 (and not the current user)
+                filter=Q(message__is_read=False) & ~Q(message__user=user)
             )
         )
+        
         notifications = [
             {'chat_room_id': chat_room.id, 'unread_messages_count': chat_room.unread_messages_count}
             for chat_room in chat_rooms
         ]
-        # print(notifications, 'notification')
         return notifications
 
     def list(self, request, *args, **kwargs):
