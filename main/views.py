@@ -53,7 +53,7 @@ def send_password_set_email(user):
     current_site = 'http://127.0.0.1:8000/'
     mail_subject = "Reset your password"
 
-    link = f'http://localhost:3000/create-new-password/?uid={uid}&token={token}'
+    link = f'https://kidsschool.life/create-new-password/?uid={uid}&token={token}'
     # print(link, 'link---------')
 
     context = {
