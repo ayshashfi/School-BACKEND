@@ -53,9 +53,10 @@ def send_password_set_email(user):
     current_site = 'http://127.0.0.1:8000/'
     mail_subject = "Reset your password"
 
-    link = f'https://school-frontend-o8i9-cfbz9nqqy-ayshath-ashfiya-as-projects.vercel.app/create-new-password/?uid={uid}&token={token}'
+    # link = f'http://localhost:8000/create-new-password/?uid={uid}&token={token}'
     # print(link, 'link---------')
-
+    link = f'https://school-frontend-beijau6ke-ayshath-ashfiya-as-projects.vercel.app/create-new-password/?uid={uid}&token={token}'
+    
     context = {
         "link": link,
         "username": user.username
