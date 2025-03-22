@@ -31,10 +31,10 @@ ALLOWED_HOSTS = ['localhost', 'kidsschool.life', '127.0.0.1', '16.170.218.34','w
 CSRF_TRUSTED_ORIGINS = ['https://kidsschool.life','http://16.170.218.34']
 
 CORS_ALLOWED_ORIGINS = [
-    'https://kidsschool.life',
-    'http://16.170.218.34',
+   # 'https://kidsschool.life',
+    #'http://16.170.218.34',
     "http://localhost:3000",
-    "https://school-frontend-brown.vercel.app",
+   # "https://school-frontend-brown.vercel.app",
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -248,5 +248,5 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'ayshathashfiyaa@gmail.com'
-EMAIL_HOST_PASSWORD = 'nheb teww zgdn xmmw'   
+EMAIL_HOST_PASSWORD = 'wjog owxp uofq cefm'   
 
